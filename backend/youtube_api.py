@@ -25,7 +25,7 @@ def extract_video_id(url: str) -> str:
 
 
 def fetch_comments(video_url: str, max_comments: int = 100) -> dict:
-    """Fetch comments from a YouTube video."""
+    """Fetch comments from a YouTube video with likes and dates."""
     if not YOUTUBE_API_KEY:
         raise ValueError("YouTube API key not configured. Add it to backend/.env")
 
@@ -46,7 +46,8 @@ def fetch_comments(video_url: str, max_comments: int = 100) -> dict:
 
     video_data = video_response["items"][0]
     video_title = video_data["snippet"]["title"]
-    comment_count = int(video_data["statistics"].get("commentCount", 0))
+    video_stats = video_data["statistics"]
+    comment_count = int(video_stats.get("commentCount", 0))
 
     if comment_count == 0:
         raise ValueError("Comments are disabled or not available for this video.")
@@ -62,15 +63,21 @@ def fetch_comments(video_url: str, max_comments: int = 100) -> dict:
                 videoId=video_id,
                 maxResults=min(100, max_comments - len(comments)),
                 pageToken=next_page_token,
-                textFormat="plainText"
+                textFormat="plainText",
+                order="relevance"
             )
             response = request.execute()
 
             for item in response.get("items", []):
-                comment = item["snippet"]["topLevelComment"]["snippet"]
-                text = comment["textDisplay"]
+                snippet = item["snippet"]["topLevelComment"]["snippet"]
+                text = snippet["textDisplay"]
                 if text and len(text.strip()) > 0:
-                    comments.append(text)
+                    comments.append({
+                        "text": text,
+                        "likes": int(snippet.get("likeCount", 0)),
+                        "published_at": snippet.get("publishedAt", ""),
+                        "author": snippet.get("authorDisplayName", "Anonymous")
+                    })
 
             next_page_token = response.get("nextPageToken")
             if not next_page_token:
@@ -84,6 +91,11 @@ def fetch_comments(video_url: str, max_comments: int = 100) -> dict:
         "video_id": video_id,
         "video_title": video_title,
         "total_comments_available": comment_count,
+        "video_stats": {
+            "views": int(video_stats.get("viewCount", 0)),
+            "likes": int(video_stats.get("likeCount", 0)),
+            "comments": comment_count,
+        },
         "comments_fetched": len(comments),
         "comments": comments
     }

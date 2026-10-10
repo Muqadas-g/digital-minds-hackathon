@@ -119,7 +119,6 @@ html, body {
     margin-top: 1px;
 }
 
-/* Categories */
 .categories {
     flex: 1;
     overflow-y: auto;
@@ -597,7 +596,122 @@ html, body {
 .hidden { display: none !important; }
 
 /* ============================================
-   SHAKE ANIMATION (for empty input)
+   NEW FEATURES STYLING (Timeline, Liked, Samples)
+   ============================================ */
+
+.timeline-container {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.timeline-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+}
+
+.timeline-date {
+    width: 75px;
+    color: var(--text-mute);
+    font-weight: 500;
+}
+
+.timeline-bar {
+    flex: 1;
+    height: 14px;
+    display: flex;
+    border-radius: 100px;
+    overflow: hidden;
+    background: var(--card);
+}
+
+.timeline-pos { background: var(--positive); }
+.timeline-neu { background: var(--neutral); }
+.timeline-neg { background: var(--negative); }
+
+.timeline-count {
+    width: 30px;
+    text-align: right;
+    color: var(--text-mute);
+}
+
+.liked-container {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.liked-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: grid;
+    grid-template-columns: auto auto auto 1fr;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+}
+
+.liked-rank {
+    font-weight: 700;
+    color: var(--primary-text);
+    font-size: 14px;
+}
+
+.liked-likes {
+    color: var(--text-dim);
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.liked-emoji { font-size: 16px; }
+
+.liked-text {
+    color: var(--text);
+    line-height: 1.5;
+}
+
+.samples-container {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sample-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.sample-emoji {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.sample-text { color: var(--text); }
+
+.kw-highlight {
+    background: rgba(139, 92, 246, 0.25);
+    color: var(--primary-text);
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* ============================================
+   SHAKE ANIMATION
    ============================================ */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }

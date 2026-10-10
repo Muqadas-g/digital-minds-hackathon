@@ -39,7 +39,6 @@ function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     themeIcon.innerHTML = theme === "dark" ? SUN_ICON : MOON_ICON;
     localStorage.setItem("dm-theme", theme);
-    // Refresh chart colors if a chart exists
     if (chartInstance) refreshChartTheme();
 }
 
@@ -48,7 +47,6 @@ function toggleTheme() {
     applyTheme(current === "dark" ? "light" : "dark");
 }
 
-// Load saved theme
 const savedTheme = localStorage.getItem("dm-theme") || "dark";
 applyTheme(savedTheme);
 
@@ -74,7 +72,6 @@ overlay.addEventListener("click", () => {
 
 clearBtn.addEventListener("click", clearChat);
 
-// Sidebar categories
 document.querySelectorAll(".cat-item").forEach(btn => {
     btn.addEventListener("click", () => {
         document.querySelectorAll(".cat-item").forEach(b => b.classList.remove("active"));
@@ -167,10 +164,62 @@ function removeTypingIndicator(id) {
     if (el) el.remove();
 }
 
+// ============================================
+// MAIN RESULT RENDERER (with new features)
+// ============================================
 function addBotResult(data) {
     const div = document.createElement("div");
     div.className = "msg msg-bot";
     const chartId = "chart-" + Date.now();
+
+    let langHtml = "";
+    for (const [lang, count] of Object.entries(data.languages || {})) {
+        const pct = ((count / data.comments_analyzed) * 100).toFixed(1);
+        langHtml += `<span class="hint">🌐 ${lang}: ${count} (${pct}%)</span>`;
+    }
+
+    function wordsHtml(words) {
+        if (!words || words.length === 0) return '<span class="hint">No data</span>';
+        return words.map(w => `<span class="hint">${w.word} (${w.count})</span>`).join("");
+    }
+
+    let likedHtml = "";
+    (data.top_liked_comments || []).forEach((c, i) => {
+        const emoji = c.label === "Positive" ? "😊" : c.label === "Negative" ? "😞" : "😐";
+        likedHtml += `
+            <div class="liked-item">
+                <span class="liked-rank">#${i + 1}</span>
+                <span class="liked-likes">👍 ${c.likes.toLocaleString()}</span>
+                <span class="liked-emoji">${emoji}</span>
+                <div class="liked-text">${highlightKeywords(escapeHtml(c.text), c.keywords)}</div>
+            </div>
+        `;
+    });
+
+    function samplesHtml(samples, emoji) {
+        if (!samples || samples.length === 0) return "";
+        return samples.map(s => `
+            <div class="sample-item">
+                <span class="sample-emoji">${emoji}</span>
+                <div class="sample-text">${highlightKeywords(escapeHtml(s.text), s.keywords)}</div>
+            </div>
+        `).join("");
+    }
+
+    let timelineHtml = "";
+    if (data.timeline && data.timeline.length > 0) {
+        timelineHtml = data.timeline.map(t => `
+            <div class="timeline-row">
+                <span class="timeline-date">${t.date}</span>
+                <div class="timeline-bar">
+                    <div class="timeline-pos" style="width:${(t.Positive / t.total) * 100}%"></div>
+                    <div class="timeline-neu" style="width:${(t.Neutral / t.total) * 100}%"></div>
+                    <div class="timeline-neg" style="width:${(t.Negative / t.total) * 100}%"></div>
+                </div>
+                <span class="timeline-count">${t.total}</span>
+            </div>
+        `).join("");
+    }
 
     div.innerHTML = `
         <div class="avatar bot-avatar">${BOT_AVATAR_SVG}</div>
@@ -178,6 +227,7 @@ function addBotResult(data) {
             <p>✅ <strong>Analysis complete!</strong></p>
             <p><strong>Video:</strong> ${escapeHtml(data.video_title)}</p>
             <p><strong>Analyzed:</strong> ${data.comments_analyzed} comments (out of ${data.total_comments_available} available)</p>
+            <p><strong>Video Stats:</strong> 👁️ ${(data.video_stats?.views || 0).toLocaleString()} views · 👍 ${(data.video_stats?.likes || 0).toLocaleString()} likes</p>
 
             <div class="result-cards">
                 <div class="result-card positive">
@@ -203,13 +253,51 @@ function addBotResult(data) {
             <div class="chat-chart">
                 <canvas id="${chartId}"></canvas>
             </div>
+
+            ${timelineHtml ? `
+                <p style="margin-top: 20px;"><strong>📅 Sentiment Timeline:</strong></p>
+                <div class="timeline-container">${timelineHtml}</div>
+            ` : ""}
+
+            ${likedHtml ? `
+                <p style="margin-top: 20px;"><strong>🔥 Top Liked Comments:</strong></p>
+                <div class="liked-container">${likedHtml}</div>
+            ` : ""}
+
+            <p style="margin-top: 20px;"><strong>💬 Sample Comments:</strong></p>
+            <div class="samples-container">
+                ${samplesHtml(data.sample_comments?.positive, "😊")}
+                ${samplesHtml(data.sample_comments?.neutral, "😐")}
+                ${samplesHtml(data.sample_comments?.negative, "😞")}
+            </div>
+
+            <p style="margin-top: 20px;"><strong>🌐 Languages Detected:</strong></p>
+            <div class="quick-hints">${langHtml}</div>
+
+            <p style="margin-top: 16px;"><strong>😊 Top Positive Words:</strong></p>
+            <div class="quick-hints">${wordsHtml(data.top_positive_words)}</div>
+
+            <p style="margin-top: 12px;"><strong>😞 Top Negative Words:</strong></p>
+            <div class="quick-hints">${wordsHtml(data.top_negative_words)}</div>
+
+            <p style="margin-top: 12px;"><strong>😐 Top Neutral Words:</strong></p>
+            <div class="quick-hints">${wordsHtml(data.top_neutral_words)}</div>
         </div>
     `;
 
     chat.appendChild(div);
     scrollBottom();
-
     setTimeout(() => renderChart(chartId, data), 100);
+}
+
+function highlightKeywords(text, keywords) {
+    if (!keywords || keywords.length === 0) return text;
+    let result = text;
+    keywords.forEach(kw => {
+        const regex = new RegExp(`\\b${kw}\\b`, 'gi');
+        result = result.replace(regex, `<mark class="kw-highlight">$&</mark>`);
+    });
+    return result;
 }
 
 function addBotError(msg) {
@@ -287,12 +375,7 @@ function renderChart(canvasId, data) {
                     cornerRadius: 8
                 }
             },
-            animation: {
-                animateScale: true,
-                animateRotate: true,
-                duration: 900,
-                easing: "easeOutQuart"
-            }
+            animation: { animateScale: true, animateRotate: true, duration: 900 }
         }
     });
 }

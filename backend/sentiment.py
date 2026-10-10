@@ -6,6 +6,7 @@ import joblib
 import json
 import os
 import re
+from langdetect import detect, LangDetectException
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -69,3 +70,23 @@ def predict_sentiment(text: str) -> dict:
             "Neutral": round(1 - max_prob, 4) if label == "Neutral" else 0.0
         }
     }
+
+
+def detect_language(text: str) -> str:
+    """Detect language of a comment."""
+    try:
+        lang_code = detect(text)
+        lang_map = {
+            'en': 'English', 'ur': 'Urdu', 'hi': 'Hindi',
+            'es': 'Spanish', 'fr': 'French', 'ar': 'Arabic',
+            'pt': 'Portuguese', 'ru': 'Russian', 'de': 'German',
+            'ja': 'Japanese', 'ko': 'Korean', 'zh-cn': 'Chinese',
+            'id': 'Indonesian', 'tr': 'Turkish', 'fa': 'Persian',
+            'bn': 'Bengali', 'pa': 'Punjabi', 'ta': 'Tamil',
+            'it': 'Italian', 'nl': 'Dutch', 'pl': 'Polish',
+        }
+        return lang_map.get(lang_code, f"Other ({lang_code})")
+    except LangDetectException:
+        return "Unknown"
+    except Exception:
+        return "Unknown"
