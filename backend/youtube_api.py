@@ -8,7 +8,16 @@ from googleapiclient.discovery import build
 from dotenv import load_dotenv
 
 load_dotenv()
-YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
+
+# Try Streamlit secrets first, then fall back to .env
+try:
+    import streamlit as st
+    YOUTUBE_API_KEY = st.secrets.get("YOUTUBE_API_KEY", None)
+except Exception:
+    YOUTUBE_API_KEY = None
+
+if not YOUTUBE_API_KEY:
+    YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 
 
 def extract_video_id(url: str) -> str:
@@ -27,7 +36,7 @@ def extract_video_id(url: str) -> str:
 def fetch_comments(video_url: str, max_comments: int = 100) -> dict:
     """Fetch comments from a YouTube video with likes and dates."""
     if not YOUTUBE_API_KEY:
-        raise ValueError("YouTube API key not configured. Add it to backend/.env")
+        raise ValueError("YouTube API key not configured. Please add it to Streamlit Secrets or backend/.env")
 
     video_id = extract_video_id(video_url)
     youtube = build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
