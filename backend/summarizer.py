@@ -20,12 +20,51 @@ if GEMINI_API_KEY:
 
 
 def fetch_transcript(video_id: str) -> str:
-    """Fetch YouTube video transcript."""
+    """Fetch YouTube video transcript in any available language."""
     try:
         from youtube_transcript_api import YouTubeTranscriptApi
-        transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
-        transcript = " ".join([item["text"] for item in transcript_list])
-        return transcript
+        
+        # Try multiple languages: English first, then Hindi, then Urdu, then any
+        try:
+            # Try listing all available transcripts
+            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+            
+            # Priority: manual English, auto English, Hindi, Urdu, or any available
+            transcript = None
+            try:
+                transcript = transcript_list.find_transcript(['en', 'en-US', 'en-GB'])
+            except Exception:
+                try:
+                    transcript = transcript_list.find_transcript(['hi', 'ur'])
+                except Exception:
+                    # Get any available transcript (first one)
+                    for t in transcript_list:
+                        transcript = t
+                        break
+            
+            if transcript is None:
+                raise ValueError("No transcript available for this video")
+            
+            # Fetch the transcript data
+            data = transcript.fetch()
+            text = " ".join([item["text"] for item in data])
+            
+            # If transcript is not English, note the language
+            if transcript.language_code not in ['en', 'en-US', 'en-GB']:
+                text = f"[Original language: {transcript.language}]\n\n{text}"
+            
+            return text
+            
+        except Exception as e:
+            # Fallback: try direct get_transcript with common languages
+            for lang in [['en'], ['hi'], ['ur'], ['en', 'hi']]:
+                try:
+                    transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=lang)
+                    return " ".join([item["text"] for item in transcript_list])
+                except Exception:
+                    continue
+            raise ValueError(f"No transcript available: {str(e)}")
+            
     except Exception as e:
         raise ValueError(f"Could not fetch transcript: {str(e)}")
 
@@ -37,10 +76,13 @@ def generate_summary(transcript: str, video_title: str) -> dict:
 
     try:
         model = genai.GenerativeModel("gemini-1.5-flash")
-        transcript_short = transcript[:15000]
+        transcript_short = transcript[:20000]
         
         prompt = f"""
-        Analyze this YouTube video transcript and provide:
+        Analyze this YouTube video transcript and provide a clear summary.
+
+        IMPORTANT: If the transcript is in a language other than English, 
+        translate it internally and provide the summary in ENGLISH.
 
         1. **Video Type**: Lecture / Tutorial / Documentary / Interview / Review / News
         2. **Purpose**: What is this video about? (1 sentence)
