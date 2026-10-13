@@ -51,27 +51,131 @@ else:
 # Custom CSS
 st.markdown(f"""
 <style>
-    .stApp {{ background-color: {bg_main}; color: {text_primary}; }}
+    /* Main app */
+    .stApp {{
+        background-color: {bg_main};
+        color: {text_primary};
+    }}
+    
+    /* Hide Streamlit branding */
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
     header {{visibility: hidden;}}
-    [data-testid="stSidebar"] {{ background-color: {bg_sidebar}; border-right: 1px solid {border}; }}
-    h1, h2, h3 {{ color: {text_primary} !important; font-weight: 600 !important; letter-spacing: -0.5px; }}
-    .stChatMessage {{ background-color: {bg_card} !important; border: 1px solid {border}; border-radius: 12px; }}
-    .stButton > button {{
-        background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
-        color: white !important; border: none !important;
-        border-radius: 12px !important; padding: 12px 24px !important;
-        font-weight: 600 !important; font-size: 14px !important;
-        width: 100% !important; transition: all 0.2s !important;
+    
+    /* Sidebar */
+    [data-testid="stSidebar"] {{
+        background-color: {bg_sidebar};
+        border-right: 1px solid {border};
     }}
-    .stButton > button:hover {{ transform: translateY(-1px); box-shadow: 0 8px 20px rgba(139,92,246,0.4) !important; }}
-    [data-testid="stMetricValue"] {{ color: {text_primary} !important; font-size: 32px !important; font-weight: 700 !important; }}
-    [data-testid="stMetricLabel"] {{ color: {text_secondary} !important; font-size: 13px !important; text-transform: uppercase; letter-spacing: 0.5px; }}
-    hr {{ border-color: {border} !important; margin: 24px 0 !important; }}
-    .stTabs [data-baseweb="tab-list"] {{ gap: 8px; background-color: transparent; }}
-    .stTabs [data-baseweb="tab"] {{ background-color: {bg_card}; border-radius: 8px; padding: 10px 20px; color: {text_secondary}; font-weight: 500; }}
-    .stTabs [aria-selected="true"] {{ background-color: rgba(139,92,246,0.15) !important; color: #c4b5fd !important; }}
+    
+    [data-testid="stSidebar"] .stButton > button {{
+        background: transparent !important;
+        border: 1px solid {border_strong} !important;
+        color: {text_primary} !important;
+        font-weight: 500 !important;
+        font-size: 13px !important;
+        padding: 10px 16px !important;
+        border-radius: 10px !important;
+        transition: all 0.2s !important;
+    }}
+    
+    [data-testid="stSidebar"] .stButton > button:hover {{
+        background: rgba(139,92,246,0.1) !important;
+        border-color: rgba(139,92,246,0.4) !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }}
+    
+    /* Headings */
+    h1, h2, h3 {{
+        color: {text_primary} !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.4px;
+    }}
+    
+    /* Chat messages */
+    .stChatMessage {{
+        background-color: {bg_card} !important;
+        border: 1px solid {border} !important;
+        border-radius: 14px !important;
+    }}
+    
+    /* Main buttons */
+    .main .stButton > button {{
+        background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        padding: 12px 24px !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        transition: all 0.2s !important;
+    }}
+    
+    .main .stButton > button:hover {{
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(139,92,246,0.35) !important;
+    }}
+    
+    /* Metric cards */
+    [data-testid="stMetric"] {{
+        background-color: {bg_card} !important;
+        border: 1px solid {border} !important;
+        border-radius: 12px !important;
+        padding: 16px 20px !important;
+    }}
+    
+    [data-testid="stMetricValue"] {{
+        color: {text_primary} !important;
+        font-size: 28px !important;
+        font-weight: 700 !important;
+    }}
+    
+    [data-testid="stMetricLabel"] {{
+        color: {text_secondary} !important;
+        font-size: 12px !important;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        font-weight: 600 !important;
+    }}
+    
+    /* Dividers */
+    hr {{
+        border-color: {border} !important;
+        margin: 28px 0 !important;
+    }}
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 6px;
+        background-color: transparent;
+    }}
+    
+    .stTabs [data-baseweb="tab"] {{
+        background-color: {bg_card};
+        border-radius: 8px;
+        padding: 10px 20px;
+        color: {text_secondary};
+        font-weight: 500;
+        font-size: 13px;
+    }}
+    
+    .stTabs [aria-selected="true"] {{
+        background-color: rgba(139,92,246,0.15) !important;
+        color: #c4b5fd !important;
+    }}
+    
+    /* Chat input */
+    [data-testid="stChatInput"] textarea {{
+        background-color: {bg_card} !important;
+        color: {text_primary} !important;
+        border: 1px solid {border_strong} !important;
+    }}
+    
+    /* Info/Warning boxes */
+    .stAlert {{
+        border-radius: 10px !important;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -79,8 +183,8 @@ st.markdown(f"""
 with st.sidebar:
     st.markdown(f"""
     <div style="padding: 8px 0 20px 0;">
-        <h2 style="color: {text_primary}; font-size: 17px; margin: 0; line-height: 1.3;">
-            AI-Powered YouTube Video Analyzer
+        <h2 style="color: {text_primary}; font-size: 16px; margin: 0; line-height: 1.4; font-weight: 600;">
+            AI-Powered YouTube<br>Video Analyzer
         </h2>
     </div>
     """, unsafe_allow_html=True)
@@ -98,17 +202,23 @@ with st.sidebar:
 
 # Main title
 st.markdown(f"""
-<div style="text-align: center; padding: 40px 0 20px 0;">
-    <h1 style="font-size: 32px; color: {text_primary}; margin-bottom: 8px;">
-        AI-Powered YouTube Video Analyzer
+<div style="text-align: center; padding: 30px 0 24px 0;">
+    <div style="display: inline-block; background: rgba(139,92,246,0.12); 
+    border: 1px solid rgba(139,92,246,0.25); color: #c4b5fd; font-size: 12px; 
+    font-weight: 600; padding: 6px 16px; border-radius: 100px; margin-bottom: 16px;">
+        AI-Powered Analysis
+    </div>
+    <h1 style="font-size: 34px; color: {text_primary}; margin: 0 0 10px 0; 
+    font-weight: 700; letter-spacing: -0.6px;">
+        YouTube Video Analyzer
     </h1>
-    <p style="color: {text_muted}; font-size: 15px;">
-        Paste any YouTube video URL to analyze comments and get a quick summary
+    <p style="color: {text_muted}; font-size: 15px; margin: 0;">
+        Paste a YouTube video URL to analyze comments and get AI-generated summaries
     </p>
 </div>
 """, unsafe_allow_html=True)
 
-# Welcome
+# Welcome message
 if len(st.session_state.messages) == 0:
     with st.chat_message("assistant", avatar="🤖"):
         st.markdown("""
@@ -123,10 +233,12 @@ if len(st.session_state.messages) == 0:
         **Try it:** Paste a YouTube URL below.
         """)
 
+# Display previous messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar=message.get("avatar", "👤")):
         st.markdown(message["content"])
 
+# Chat input
 video_url = st.chat_input("Paste a YouTube video URL here...")
 
 if video_url:
@@ -138,7 +250,7 @@ if video_url:
     with st.chat_message("assistant", avatar="🤖"):
         with st.spinner("Analyzing video..."):
             try:
-                # Try to fetch comments (may fail)
+                # Try to fetch comments
                 comments_raw = []
                 result = {}
                 try:
@@ -264,7 +376,11 @@ if video_url:
                                 st.markdown(urdu_summary)
                     
                     except ValueError as e:
-                        st.info(f"Summary not available: {str(e)}")
+                        st.warning(
+                            f"**{str(e)}**\n\n"
+                            "Video summary requires subtitles (CC) to be enabled on the "
+                            "YouTube video. Please try another video that has captions available."
+                        )
 
             except ValueError as e:
                 st.error(f"{str(e)}")
