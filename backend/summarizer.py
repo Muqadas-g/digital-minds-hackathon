@@ -1,6 +1,5 @@
 # ============================================
 # summarizer.py - YouTube Video Summarization
-# Uses pytube to bypass YouTube IP blocks on cloud
 # ============================================
 
 import os
@@ -21,19 +20,20 @@ if GEMINI_API_KEY:
 
 
 def fetch_transcript(video_id: str) -> str:
-    """Fetch YouTube video transcript using pytube (bypasses IP blocks)."""
+    """Fetch YouTube video transcript."""
     try:
         from pytube import YouTube
     except ImportError:
-        raise ValueError("pytube not installed")
+        raise ValueError("Transcript service is currently unavailable.")
 
     try:
         url = f"https://www.youtube.com/watch?v={video_id}"
         yt = YouTube(url)
         captions = yt.captions
 
+        # Check if captions exist
         if not captions:
-            raise ValueError("No captions available for this video")
+            raise ValueError("Subtitles (CC) are not available for this video.")
 
         # Try English first
         caption = None
@@ -53,36 +53,47 @@ def fetch_transcript(video_id: str) -> str:
         if caption is None:
             caption = list(captions)[0]
 
-        # Generate SRT and clean it
+        # Generate SRT and clean
         srt = caption.generate_srt_captions()
-        # Remove timestamps and numbers
         text = re.sub(r'\d+\n', '', srt)
         text = re.sub(r'\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}', '', text)
         text = re.sub(r'<[^>]+>', '', text)
         text = re.sub(r'\s+', ' ', text).strip()
 
         if not text:
-            raise ValueError("Transcript is empty")
+            raise ValueError("Subtitles (CC) are not available for this video.")
 
-        # Note if non-English
         if not caption.code.startswith('en'):
             text = f"[Original language: {caption.code}]\n\n{text}"
 
         return text
 
+    except ValueError:
+        # Re-raise our clean messages
+        raise
     except Exception as e:
-        error_msg = str(e)
-        if "unavailable" in error_msg.lower():
-            raise ValueError("Video is unavailable or private")
-        if "age" in error_msg.lower():
-            raise ValueError("Age-restricted video — cannot fetch transcript")
-        raise ValueError(f"Could not fetch transcript: {error_msg}")
+        error_msg = str(e).lower()
+
+        # Friendly error messages
+        if "captions" in error_msg or "no caption" in error_msg:
+            raise ValueError("Subtitles (CC) are not available for this video.")
+        if "unavailable" in error_msg or "private" in error_msg:
+            raise ValueError("This video is unavailable or private.")
+        if "age" in error_msg:
+            raise ValueError("This is an age-restricted video.")
+        if "400" in error_msg or "bad request" in error_msg or "blocked" in error_msg:
+            raise ValueError(
+                "Video summarization is not available on the cloud version "
+                "due to platform restrictions. Please try the local version."
+            )
+
+        raise ValueError("Subtitles (CC) are not available for this video.")
 
 
 def generate_summary(transcript: str, video_title: str) -> dict:
     """Generate AI summary from transcript using Gemini."""
     if not GEMINI_API_KEY:
-        raise ValueError("Gemini API key not configured.")
+        raise ValueError("Summary service is currently unavailable.")
 
     try:
         model = genai.GenerativeModel("gemini-1.5-flash")
@@ -113,7 +124,7 @@ def generate_summary(transcript: str, video_title: str) -> dict:
         return {"summary": response.text}
 
     except Exception as e:
-        raise ValueError(f"Failed to generate summary: {str(e)}")
+        raise ValueError(f"Could not generate summary: {str(e)}")
 
 
 def translate_to_urdu(text: str) -> str:
