@@ -20,177 +20,158 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS — ChatGPT-style layout
-st.markdown("""
+# Session state init
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
+
+# Theme colors
+if st.session_state.theme == "dark":
+    bg_main = "#0d0d0f"
+    bg_sidebar = "#16161c"
+    bg_card = "#1a1a24"
+    text_primary = "#ececf1"
+    text_secondary = "#a1a1aa"
+    text_muted = "#71717a"
+    border = "rgba(255,255,255,0.06)"
+    border_strong = "rgba(255,255,255,0.1)"
+else:
+    bg_main = "#f7f7f8"
+    bg_sidebar = "#ffffff"
+    bg_card = "#f3f4f6"
+    text_primary = "#18181b"
+    text_secondary = "#52525b"
+    text_muted = "#a1a1aa"
+    border = "rgba(0,0,0,0.06)"
+    border_strong = "rgba(0,0,0,0.1)"
+
+# Custom CSS — dynamic theme
+st.markdown(f"""
 <style>
-    .stApp {
-        background-color: #0d0d0f;
-        color: #ececf1;
-    }
+    .stApp {{
+        background-color: {bg_main};
+        color: {text_primary};
+    }}
     
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    header {{visibility: hidden;}}
     
-    [data-testid="stSidebar"] {
-        background-color: #16161c;
-        border-right: 1px solid rgba(255,255,255,0.06);
-    }
+    [data-testid="stSidebar"] {{
+        background-color: {bg_sidebar};
+        border-right: 1px solid {border};
+    }}
     
-    h1, h2, h3 {
-        color: #ffffff !important;
+    h1, h2, h3 {{
+        color: {text_primary} !important;
         font-weight: 600 !important;
         letter-spacing: -0.5px;
-    }
+    }}
     
-    .stChatMessage {
-        background-color: #1a1a24 !important;
-        border: 1px solid rgba(255,255,255,0.06);
+    .stChatMessage {{
+        background-color: {bg_card} !important;
+        border: 1px solid {border};
         border-radius: 12px;
-    }
+    }}
     
-    .stTextInput > div > div > input {
-        background-color: #1a1a24 !important;
-        color: #ececf1 !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        border-radius: 12px !important;
-        padding: 14px 18px !important;
-        font-size: 15px !important;
-    }
-    
-    .stTextInput > div > div > input:focus {
-        border-color: #8b5cf6 !important;
-        box-shadow: 0 0 0 3px rgba(139,92,246,0.15) !important;
-    }
-    
-    .stButton > button {
+    .stButton > button {{
         background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
         color: white !important;
         border: none !important;
         border-radius: 12px !important;
-        padding: 12px 28px !important;
+        padding: 12px 24px !important;
         font-weight: 600 !important;
         font-size: 14px !important;
+        width: 100% !important;
         transition: all 0.2s !important;
-    }
+    }}
     
-    .stButton > button:hover {
+    .stButton > button:hover {{
         transform: translateY(-1px);
         box-shadow: 0 8px 20px rgba(139,92,246,0.4) !important;
-    }
+    }}
     
-    [data-testid="stMetricValue"] {
-        color: #ffffff !important;
+    [data-testid="stMetricValue"] {{
+        color: {text_primary} !important;
         font-size: 32px !important;
         font-weight: 700 !important;
-    }
+    }}
     
-    [data-testid="stMetricLabel"] {
-        color: #a1a1aa !important;
+    [data-testid="stMetricLabel"] {{
+        color: {text_secondary} !important;
         font-size: 13px !important;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-    }
+    }}
     
-    hr {
-        border-color: rgba(255,255,255,0.08) !important;
+    hr {{
+        border-color: {border} !important;
         margin: 24px 0 !important;
-    }
+    }}
     
-    .stTabs [data-baseweb="tab-list"] {
+    .stTabs [data-baseweb="tab-list"] {{
         gap: 8px;
         background-color: transparent;
-    }
+    }}
     
-    .stTabs [data-baseweb="tab"] {
-        background-color: #1a1a24;
+    .stTabs [data-baseweb="tab"] {{
+        background-color: {bg_card};
         border-radius: 8px;
         padding: 10px 20px;
-        color: #a1a1aa;
+        color: {text_secondary};
         font-weight: 500;
-    }
+    }}
     
-    .stTabs [aria-selected="true"] {
+    .stTabs [aria-selected="true"] {{
         background-color: rgba(139,92,246,0.15) !important;
         color: #c4b5fd !important;
-    }
+    }}
+    
+    [data-testid="stChatInput"] textarea {{
+        background-color: {bg_card} !important;
+        color: {text_primary} !important;
+        border: 1px solid {border_strong} !important;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar — Technical Info Only
+# Sidebar — Only Clear Chat + Theme Toggle
 with st.sidebar:
-    st.markdown("""
+    st.markdown(f"""
     <div style="padding: 8px 0 20px 0;">
-        <h2 style="color: #ffffff; font-size: 18px; margin: 0; line-height: 1.3;">
+        <h2 style="color: {text_primary}; font-size: 17px; margin: 0; line-height: 1.3;">
             AI-Powered YouTube Video Analyzer
         </h2>
-        <p style="color: #71717a; font-size: 13px; margin: 6px 0 0 0;">
-            Sentiment Analysis System
-        </p>
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    st.markdown("### System Overview")
-    st.markdown("""
-    <p style="color: #a1a1aa; font-size: 13px; line-height: 1.7;">
-    An AI-powered tool that analyzes YouTube video comments 
-    using Machine Learning and Natural Language Processing.
-    </p>
-    """, unsafe_allow_html=True)
+    # Clear Chat Button
+    if st.button("Clear Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
     
-    st.markdown("### Capabilities")
-    st.markdown("""
-    <div style="color: #d4d4d8; font-size: 13px; line-height: 2;">
-    • Real-time sentiment analysis<br>
-    • Language detection<br>
-    • Sentiment timeline<br>
-    • Top liked comments<br>
-    • Keyword extraction<br>
-    • Interactive charts
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("### Model Information")
-    st.markdown("""
-    <div style="color: #d4d4d8; font-size: 13px; line-height: 2;">
-    <b style="color: #a1a1aa;">Algorithm:</b> Logistic Regression<br>
-    <b style="color: #a1a1aa;">Vectorizer:</b> TF-IDF (50K features)<br>
-    <b style="color: #a1a1aa;">Accuracy:</b> 81.17%<br>
-    <b style="color: #a1a1aa;">F1-Score:</b> 0.8117<br>
-    <b style="color: #a1a1aa;">Dataset:</b> Sentiment140
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    st.markdown("""
-    <div style="text-align: center; padding: 12px 0;">
-        <span style="background: rgba(139,92,246,0.15); color: #c4b5fd; 
-        font-size: 11px; font-weight: 600; padding: 6px 14px; 
-        border-radius: 100px; border: 1px solid rgba(139,92,246,0.3);">
-        Hackathon 2026
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
+    # Theme Toggle
+    theme_icon = "Light Mode" if st.session_state.theme == "dark" else "Dark Mode"
+    if st.button(theme_icon, use_container_width=True):
+        st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
+        st.rerun()
 
 
 # Main content
-st.markdown("""
+st.markdown(f"""
 <div style="text-align: center; padding: 40px 0 20px 0;">
-    <h1 style="font-size: 32px; color: #ffffff; margin-bottom: 8px;">
+    <h1 style="font-size: 32px; color: {text_primary}; margin-bottom: 8px;">
         AI-Powered YouTube Video Analyzer
     </h1>
-    <p style="color: #71717a; font-size: 15px;">
+    <p style="color: {text_muted}; font-size: 15px;">
         Paste any YouTube video URL below to analyze comment sentiment
     </p>
 </div>
 """, unsafe_allow_html=True)
-
-# Session state
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
 # Welcome message
 if len(st.session_state.messages) == 0:
@@ -286,9 +267,9 @@ if video_url:
                     )])
                     fig.update_layout(
                         title="Sentiment Distribution",
-                        paper_bgcolor="#0d0d0f",
-                        plot_bgcolor="#0d0d0f",
-                        font=dict(color="#ececf1"),
+                        paper_bgcolor=bg_main,
+                        plot_bgcolor=bg_main,
+                        font=dict(color=text_primary),
                         height=400
                     )
                     st.plotly_chart(fig, use_container_width=True)
