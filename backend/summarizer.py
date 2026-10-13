@@ -1,6 +1,6 @@
 # ============================================
 # summarizer.py - YouTube Video Summarization
-# Compatible with youtube-transcript-api 1.0.3+
+# Uses pytube to bypass YouTube IP blocks on cloud
 # ============================================
 
 import os
@@ -21,81 +21,61 @@ if GEMINI_API_KEY:
 
 
 def fetch_transcript(video_id: str) -> str:
-    """Fetch YouTube video transcript in any available language."""
+    """Fetch YouTube video transcript using pytube (bypasses IP blocks)."""
     try:
-        from youtube_transcript_api import YouTubeTranscriptApi
+        from pytube import YouTube
     except ImportError:
-        raise ValueError("youtube-transcript-api not installed")
+        raise ValueError("pytube not installed")
 
-    # Try new API (v1.0.3+)
     try:
-        api = YouTubeTranscriptApi()
-        transcript_list = api.list(video_id)
+        url = f"https://www.youtube.com/watch?v={video_id}"
+        yt = YouTube(url)
+        captions = yt.captions
+
+        if not captions:
+            raise ValueError("No captions available for this video")
 
         # Try English first
-        transcript = None
-        try:
-            transcript = transcript_list.find_transcript(['en', 'en-US', 'en-GB'])
-        except Exception:
-            try:
-                transcript = transcript_list.find_transcript(['hi', 'ur'])
-            except Exception:
-                # Get any available transcript
-                for t in transcript_list:
-                    transcript = t
+        caption = None
+        for cap in captions:
+            if cap.code.startswith('en'):
+                caption = cap
+                break
+
+        # Try Hindi or Urdu
+        if caption is None:
+            for cap in captions:
+                if cap.code.startswith('hi') or cap.code.startswith('ur'):
+                    caption = cap
                     break
 
-        if transcript is None:
-            raise ValueError("No transcript available for this video")
+        # Any available
+        if caption is None:
+            caption = list(captions)[0]
 
-        # Fetch data
-        data = transcript.fetch()
+        # Generate SRT and clean it
+        srt = caption.generate_srt_captions()
+        # Remove timestamps and numbers
+        text = re.sub(r'\d+\n', '', srt)
+        text = re.sub(r'\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}', '', text)
+        text = re.sub(r'<[^>]+>', '', text)
+        text = re.sub(r'\s+', ' ', text).strip()
 
-        # Handle both dict and object formats
-        parts = []
-        for item in data:
-            if hasattr(item, 'text'):
-                parts.append(item.text)
-            elif isinstance(item, dict) and 'text' in item:
-                parts.append(item['text'])
-            elif hasattr(item, 'content'):
-                parts.append(item.content)
-
-        text = " ".join(parts)
-
-        if not text.strip():
+        if not text:
             raise ValueError("Transcript is empty")
 
-        # Note language if not English
-        lang_code = getattr(transcript, 'language_code', 'unknown')
-        if lang_code not in ['en', 'en-US', 'en-GB']:
-            lang_name = getattr(transcript, 'language', lang_code)
-            text = f"[Original language: {lang_name}]\n\n{text}"
+        # Note if non-English
+        if not caption.code.startswith('en'):
+            text = f"[Original language: {caption.code}]\n\n{text}"
 
         return text
 
     except Exception as e:
         error_msg = str(e)
-
-        # Try older API fallback
-        try:
-            for langs in [['en'], ['en-US'], ['hi'], ['ur'], ['en', 'hi', 'ur']]:
-                try:
-                    data = YouTubeTranscriptApi.get_transcript(video_id, languages=langs)
-                    return " ".join([item["text"] for item in data])
-                except Exception:
-                    continue
-        except Exception:
-            pass
-
-        # Friendly error messages
-        if "disabled" in error_msg.lower():
-            raise ValueError("Subtitles are disabled for this video")
-        if "no transcript" in error_msg.lower() or "not found" in error_msg.lower():
-            raise ValueError("No transcript available for this video")
-        if "no element found" in error_msg.lower():
-            raise ValueError("YouTube API returned empty response. Try another video.")
-
+        if "unavailable" in error_msg.lower():
+            raise ValueError("Video is unavailable or private")
+        if "age" in error_msg.lower():
+            raise ValueError("Age-restricted video — cannot fetch transcript")
         raise ValueError(f"Could not fetch transcript: {error_msg}")
 
 
