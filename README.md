@@ -17,6 +17,7 @@
 - **Live App:** https://digital-minds-hackathon-4wjbxer5rhssflkv2xibut.streamlit.app/
 - **GitHub Repo:** https://github.com/Muqadas-g/digital-minds-hackathon
 - **Kaggle Notebook:** https://www.kaggle.com/code/muqaddasimtiaz/hackathon-project
+- **Presentation (PPT):** https://docs.google.com/presentation/d/1inWlLFgFTFHU_QFGusOSvhzsP6gFH_um/edit?usp=sharing
 
 ---
 
