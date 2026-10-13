@@ -2,7 +2,7 @@ streamlit==1.40.0
 plotly==5.24.0
 google-api-python-client==2.149.0
 google-generativeai==0.8.3
-youtube-transcript-api==0.6.2
+youtube-transcript-api==1.0.3
 deep-translator==1.11.4
 python-dotenv==1.0.1
 joblib==1.4.2
