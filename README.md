@@ -1,72 +1,61 @@
-# 🧠 Digital Minds — YouTube Sentiment Analysis
+# Bhai, Yeh Lo — Professional README (Markdown File Ke Liye)
+
+**Copy-paste ready. GitHub pe `README.md` mein paste karo.**
+
+---
+
+```markdown
+# AI-Powered YouTube Video Analyzer
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.40-FF4B4B?logo=streamlit&logoColor=white)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5-F7931E?logo=scikit-learn&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?logo=javascript&logoColor=black)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-![Hackathon](https://img.shields.io/badge/Hackathon-2026-purple)
+![Gemini](https://img.shields.io/badge/Gemini-AI-4285F4?logo=google&logoColor=white)
+![Hackathon](https://img.shields.io/badge/OpenHack-2026-purple)
 
-> **AI-powered YouTube comment sentiment analyzer** — Paste any YouTube URL and get instant **Positive / Neutral / Negative** breakdown with interactive charts.
+> An AI-powered web application that analyzes YouTube video comments and generates smart video summaries for students.
 
-Built with ❤️ by **Team Digital Minds** for **Hackathon 2026**
-
----
-
-## 📌 Table of Contents
-
-- [Overview](#-overview)
-- [Features](#-features)
-- [Demo](#-demo)
-- [Tech Stack](#-tech-stack)
-- [How It Works](#-how-it-works)
-- [ML Model Details](#-ml-model-details)
-- [Dataset](#-dataset)
-- [Project Structure](#-project-structure)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [API Endpoints](#-api-endpoints)
-- [Limitations](#-limitations)
-- [Future Improvements](#-future-improvements)
-- [Team](#-team)
-- [License](#-license)
+**Team:** Digital Minds  
+**Event:** OpenHack 2026  
+**Category:** EdTech
 
 ---
 
-## 🎯 Overview
+## 🌐 Live Demo
 
-**Digital Minds** is a full-stack Machine Learning application that analyzes the sentiment of YouTube video comments in real time.
+**Live App:** https://digital-minds-hackathon-4wjbxer5rhssflkv2xibut.streamlit.app/
 
-Users paste a YouTube video URL, and the system:
-1. Fetches comments via the **YouTube Data API v3**
-2. Cleans and preprocesses the text
-3. Runs a trained **Logistic Regression** model
-4. Classifies each comment as **Positive**, **Neutral**, or **Negative**
-5. Displays results as summary cards and an interactive doughnut chart
+**Kaggle Notebook:** https://www.kaggle.com/code/muqaddasimtiaz/hackathon-project
 
 ---
 
 ## ✨ Features
 
-- 🎥 **YouTube URL input** — Works with `youtube.com/watch`, `youtu.be`, and `shorts` URLs
-- 📡 **Live comment fetching** — Up to 100 top-level comments per video
-- 🧹 **Text preprocessing** — URL, mention, hashtag, punctuation, and number removal
-- 🤖 **ML classification** — TF-IDF + Logistic Regression (81.17% accuracy)
-- 🎚️ **Smart Neutral detection** — Probability threshold (40%–60%) for Neutral class
-- 📊 **Interactive charts** — Powered by Chart.js
-- 🌗 **Dark / Light theme** — Toggle with a single click
-- 💬 **Chatbot-style UI** — Modern, intuitive interface
-- 🧭 **Sidebar categories** — About, How It Works, Tech Stack, ML Model, Dataset, Team
+### Comment Sentiment Analysis
+- Paste any YouTube video URL
+- Fetches up to 100 top-level comments via YouTube Data API v3
+- Classifies each comment as **Positive**, **Neutral**, or **Negative**
+- Interactive doughnut chart with sentiment distribution
 
----
+### Sentiment Insights
+- **Languages Detected** — English, Urdu, Hindi, Turkish, and more
+- **Top Liked Comments** — Most engaged comments with sentiment labels
+- **Sample Comments** — Real examples per sentiment category
+- **Video Stats** — Views, likes, and comment count
 
-## 🎬 Demo
+### Video Summarization (EdTech Feature)
+- 2-minute AI-powered summary of the entire video
+- **Video Type Detection** — Lecture, Tutorial, Documentary, etc.
+- **Purpose and Topic** — What the video covers
+- **Key Points** — Top takeaways for quick revision
+- **Target Audience** — Beginner / Intermediate / Advanced
+- **Urdu Translation** — اردو خلاصہ for Pakistani students
 
-> Add a screenshot or GIF here after deployment.
-
-```
-https://digital-minds-youtube-sentiment.onrender.com
-```
+### Modern UI
+- Dark and Light theme toggle
+- Clean chatbot-style interface
+- Real-time progress indicators
+- Mobile responsive
 
 ---
 
@@ -74,85 +63,52 @@ https://digital-minds-youtube-sentiment.onrender.com
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | HTML5, CSS3, Vanilla JavaScript, Chart.js |
-| **Backend** | Python 3.11, FastAPI, Uvicorn |
-| **ML / NLP** | Scikit-learn, Joblib, TF-IDF, Logistic Regression |
-| **Data Source** | YouTube Data API v3 (Google Cloud) |
-| **Development** | VS Code, Kaggle Notebooks |
-| **Version Control** | Git, GitHub |
+| **Frontend** | Streamlit, Plotly |
+| **Backend** | Python 3.11 |
+| **ML / NLP** | Scikit-learn, TF-IDF, Logistic Regression |
+| **AI Summarization** | Google Gemini API |
+| **YouTube Data** | YouTube Data API v3 |
+| **Transcript** | pytube |
+| **Translation** | deep-translator |
+| **Deployment** | Streamlit Cloud |
+
+---
+
+## 🧠 ML Model Details
+
+| Metric | Value |
+|--------|-------|
+| **Algorithm** | Logistic Regression |
+| **Vectorizer** | TF-IDF (50,000 features, n-grams 1-2) |
+| **Training Samples** | 396,883 |
+| **Test Samples** | 99,221 |
+| **Accuracy** | **81.17%** |
+| **Precision** | 0.8118 |
+| **Recall** | 0.8117 |
+| **F1-Score** | 0.8117 |
+
+**Dataset:** Sentiment140 (Kaggle) — 1.6 million labeled tweets  
+**Used:** 497,152 balanced samples (248,576 Positive + 248,576 Negative)
 
 ---
 
 ## ⚙️ How It Works
 
-```
-┌─────────────┐    ┌──────────────┐    ┌─────────────────┐
-│   User      │───▶│   Frontend   │───▶│    Backend      │
-│ (YouTube    │    │  (HTML/CSS/  │    │   (FastAPI)     │
-│   URL)      │    │      JS)     │    │                 │
-└─────────────┘    └──────────────┘    └────────┬────────┘
-                                                 │
-                                                 ▼
-                                       ┌──────────────────┐
-                                       │  YouTube Data    │
-                                       │  API v3          │
-                                       └────────┬─────────┘
-                                                 │
-                                                 ▼
-                                       ┌──────────────────┐
-                                       │ Text Cleaning &  │
-                                       │  TF-IDF          │
-                                       └────────┬─────────┘
-                                                 │
-                                                 ▼
-                                       ┌──────────────────┐
-                                       │ Logistic         │
-                                       │ Regression       │
-                                       │ (Positive /      │
-                                       │  Neutral /       │
-                                       │  Negative)       │
-                                       └────────┬─────────┘
-                                                 │
-                                                 ▼
-                                       ┌──────────────────┐
-                                       │  Charts + Stats  │
-                                       └──────────────────┘
-```
+### Comment Sentiment Pipeline
+1. User pastes a YouTube video URL
+2. YouTube Data API fetches up to 100 comments
+3. Text preprocessing — lowercasing, URL / mention / punctuation removal
+4. TF-IDF vectorization (50K features)
+5. Logistic Regression classifies each comment
+6. Neutral detection via probability threshold (40%–60%)
+7. Results displayed as cards and interactive doughnut chart
 
----
-
-## 🤖 ML Model Details
-
-| Metric | Value |
-|--------|-------|
-| **Algorithm** | Logistic Regression |
-| **Vectorizer** | TF-IDF (50,000 features, ngram_range=(1,2)) |
-| **Training Samples** | 396,883 |
-| **Test Samples** | 99,221 |
-| **Accuracy** | **81.17%** |
-| **Precision (macro)** | 0.8118 |
-| **Recall (macro)** | 0.8117 |
-| **F1-Score (macro)** | 0.8117 |
-
-**Models compared:**
-- ✅ **Logistic Regression** — 81.17% (selected)
-- Multinomial Naive Bayes — 79.63%
-- Linear SVC — 80.44%
-
-**Why Logistic Regression?**
-Highest accuracy, fast training, and interpretable coefficients.
-
----
-
-## 📊 Dataset
-
-- **Source:** [Sentiment140](https://www.kaggle.com/code/muqaddasimtiaz/hackathon-project) (Kaggle)
-- **Original size:** 1.6 million labeled tweets
-- **Used in training:** 497,152 balanced samples (248,576 Positive + 248,576 Negative)
-- **Labels:** `0 = Negative`, `4 = Positive` (mapped to `0` and `1`)
-- **Preprocessing:** Lowercasing, URL removal, mention removal, punctuation removal, number removal
-
-**⚠️ Limitation:** Sentiment140 has **no Neutral class**. We use a **probability threshold (40%–60%)** at prediction time to detect Neutral comments.
+### Video Summarization Pipeline
+1. Extract video ID from URL
+2. Fetch transcript via pytube
+3. Send transcript to Gemini API for summarization
+4. Generate structured summary with type, purpose, and key points
+5. Optional Urdu translation via deep-translator
 
 ---
 
@@ -161,198 +117,147 @@ Highest accuracy, fast training, and interpretable coefficients.
 ```
 digital-minds-hackathon/
 │
-├── backend/                    # FastAPI backend
-│   ├── .env                    # API keys (gitignored)
-│   ├── .env.example            # Template
-│   ├── main.py                 # FastAPI app + endpoints
-│   ├── sentiment.py            # Model loading + prediction
-│   ├── youtube_api.py          # YouTube Data API integration
-│   └── requirements.txt        # Python dependencies
+├── backend/
+│   ├── sentiment.py           # ML model loading and prediction
+│   ├── youtube_api.py         # YouTube Data API integration
+│   ├── summarizer.py          # Gemini-powered video summarization
+│   └── requirements.txt
 │
-├── frontend/                   # HTML/CSS/JS frontend
-│   ├── index.html              # Chatbot UI
-│   ├── style.css               # Dark/Light theme
-│   └── script.js               # Frontend logic + charts
+├── frontend/
+│   ├── index.html             # Original chatbot UI
+│   ├── style.css
+│   └── script.js
 │
-├── models/                     # Trained ML artifacts
+├── models/
 │   ├── sentiment_pipeline.joblib
 │   ├── label_mapping.json
 │   └── model_info.json
 │
-├── notebook/                   # Kaggle notebook (optional)
-│   └── hackathon-project.ipynb
-│
-├── .gitignore
-├── LICENSE
-└── README.md
+├── streamlit_app.py           # Main Streamlit application
+├── requirements.txt           # Root dependencies
+├── runtime.txt
+├── README.md
+└── .gitignore
 ```
 
 ---
 
-## 🚀 Installation
+## 🚀 Installation & Setup
 
 ### Prerequisites
-
 - Python 3.11+
 - YouTube Data API v3 key
-- Git
+- Google Gemini API key
 
 ### Steps
 
 **1. Clone the repository**
-
 ```bash
 git clone https://github.com/Muqadas-g/digital-minds-hackathon.git
 cd digital-minds-hackathon
 ```
 
-**2. Create a virtual environment**
-
+**2. Install dependencies**
 ```bash
-python -m venv venv
-venv\Scripts\activate     # Windows
-source venv/bin/activate  # macOS/Linux
-```
-
-**3. Install dependencies**
-
-```bash
-cd backend
 pip install -r requirements.txt
 ```
 
-**4. Get a YouTube API Key**
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project
-3. Enable **YouTube Data API v3**
-4. Create an **API Key** under Credentials
-5. Copy the key
-
-**5. Configure environment variables**
+**3. Configure API keys**
 
 Create `backend/.env`:
-
 ```env
 YOUTUBE_API_KEY=your_youtube_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
----
-
-## ▶️ Usage
-
-### Run Backend
-
+**4. Run the app**
 ```bash
-cd backend
-python main.py
-```
-
-Backend runs at `http://localhost:8000`
-
-### Run Frontend
-
-Open a new terminal:
-
-```bash
-cd frontend
-python -m http.server 5500
-```
-
-Open `http://localhost:5500` in your browser.
-
-### Test It
-
-1. Paste any YouTube video URL
-2. Click **Send**
-3. View sentiment breakdown + chart
-
----
-
-## 🔌 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/health` | Health check |
-| `POST` | `/api/analyze` | Analyze a YouTube video |
-
-**POST `/api/analyze` — Request**
-
-```json
-{
-  "video_url": "https://youtu.be/RmagWIWOM4w",
-  "max_comments": 100
-}
-```
-
-**Response**
-
-```json
-{
-  "video_id": "RmagWIWOM4w",
-  "video_title": "KR CVS FOOD CHALLENGE | RED FOOD ONLY",
-  "total_comments_available": 19827,
-  "comments_analyzed": 100,
-  "counts": { "Positive": 72, "Neutral": 18, "Negative": 10 },
-  "percentages": { "Positive": 72.0, "Neutral": 18.0, "Negative": 10.0 }
-}
+streamlit run streamlit_app.py
 ```
 
 ---
 
-## ⚠️ Limitations
+## 📓 Kaggle Notebook
 
-- **No Neutral class in training data** — Handled via probability threshold
-- **Domain mismatch** — Model trained on Twitter data, not YouTube comments
-- **Sarcasm & negation** — Difficult cases (e.g., "not bad at all")
-- **API quota** — YouTube Data API has a daily limit (10,000 units)
-- **Language** — Optimized for English comments only
+The complete ML pipeline — data loading, EDA, preprocessing, model training, evaluation, and saving — was developed in a Kaggle Notebook.
+
+🔗 **View Notebook:** https://www.kaggle.com/code/muqaddasimtiaz/hackathon-project
 
 ---
 
-## 🚀 Future Improvements
+## ⚠️ Known Limitations
 
-- 🔤 **Multilingual support** — Add Urdu, Hindi, Spanish
-- 🧠 **Transformer models** — BERT / RoBERTa for better accuracy
-- 💬 **Reply analysis** — Include nested comments
-- 📈 **Trend analysis** — Sentiment over time
-- 🎯 **Emoji analysis** — Sentiment from emojis
-- 🔐 **User authentication** — Save analysis history
-- 📱 **Mobile app** — React Native / Flutter
+1. **Videos Without Captions (CC)** — Videos that do not have subtitles / CC enabled cannot be summarized. The app displays a clear message: *"Subtitles (CC) are not available for this video."*
+
+2. **YouTube Cloud IP Restrictions** — YouTube may block transcript requests from cloud provider IPs (Streamlit Cloud, AWS, etc.). Video summarization works fully in the **local version** but may be unavailable in the cloud deployment.
+
+3. **Domain Mismatch** — The ML model was trained on Twitter data (Sentiment140), so accuracy on YouTube comments may vary.
+
+4. **Sarcasm and Negation** — Complex sentence structures and sarcasm may be difficult for the model.
+
+5. **API Quotas** — YouTube Data API has a daily quota limit (10,000 units/day on free tier).
+
+---
+
+## 🔮 Future Work
+
+- **Multilingual Support** — Full Urdu, Hindi, and Sindhi sentiment analysis
+- **Transformer Models** — BERT / RoBERTa for higher accuracy
+- **Emotion Detection** — Joy, anger, sadness, fear, surprise
+- **Q&A Feature** — Ask questions about the video content
+- **Quiz Generator** — Auto-generate quizzes for students
+- **PDF Notes** — Download structured notes
+- **Mobile App** — React Native version
+- **Video Comparison** — Compare multiple videos on the same topic
 
 ---
 
 ## 👥 Team
 
-**Team Digital Minds** — Hackathon 2026
+**Team Name:** Digital Minds  
+**Event:** OpenHack 2026  
+**Category:** EdTech
 
-| Role | Responsibility |
-|------|---------------|
-| 🧑‍💻 **ML / NLP Engineer** | Dataset, model training, evaluation, deployment |
-| 🎨 **Frontend Developer** | UI/UX design, chatbot interface |
-| 🔌 **Backend Developer** | FastAPI, YouTube API integration |
-| 🎤 **Presenter** | Demo, slides, judges' Q&A |
+| Role | Member |
+|------|--------|
+| **Faculty Lead / ML Engineer** | Muqaddas Imtiaz — Final Year BS Data Science, QUEST University Nawabshah |
+| **Team Member** | Sonia Kumari — 25SW, 2nd Year, MUET SZAB Campus |
+| **Team Member** | Khadija Mahar — 25SW, 2nd Year, MUET SZAB Campus |
+
+---
+
+## 🤖 AI & Open-Source Disclosure
+
+### AI Tools Used
+- **Google Gemini API** (gemini-1.5-flash) — Video summarization
+- **ChatGPT / Claude** — Development assistance and debugging
+
+### Open-Source Technologies
+- **Streamlit** — Web app framework
+- **Plotly** — Interactive charts
+- **scikit-learn** — ML model (TF-IDF + Logistic Regression)
+- **pytube** — YouTube transcript fetching
+- **deep-translator** — Urdu translation
+- **langdetect** — Language detection
+- **FastAPI** — Backend API framework
+
+### Dataset
+- **Sentiment140** (Kaggle) — 1.6 million labeled tweets
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- [Sentiment140](https://www.kaggle.com/datasets/kazanova/sentiment140) — Kaggle dataset
-- [Scikit-learn](https://scikit-learn.org/) — ML library
-- [FastAPI](https://fastapi.tiangolo.com/) — Backend framework
-- [Chart.js](https://www.chartjs.org/) — Interactive charts
-- [YouTube Data API v3](https://developers.google.com/youtube/v3) — Comment source
+This project is licensed under the **MIT License**.
 
 ---
 
 <p align="center">
-  <strong>⭐ If you found this project useful, please give it a star! ⭐</strong>
-  <br><br>
-  Made with ❤️ by <strong>Team Digital Minds</strong>
+  <strong>Built with ❤️ by Team Digital Minds</strong>
+  <br>
+  <em>OpenHack 2026 — Build. Solve. Demonstrate.</em>
 </p>
+```
+
+---
+
